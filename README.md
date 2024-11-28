@@ -43,6 +43,13 @@ This command retrieves all rows from the time_log table. The * symbol means "all
 
 ## 2.API Development:
 
+## Go API for Current Toronto Time with MySQL Database Logging
+
+This project provides a simple API that returns the current time in Toronto and logs it to a MySQL database.
+
+### Code
+
+```go
 package main
 
 import (
@@ -139,14 +146,6 @@ func logTimeToDatabase(timestamp time.Time) error {
         return fmt.Errorf("failed to insert time into database: %w", err)
     }
     return nil
-}
-
-
-## 3.Time Zone Conversion:
-
-{
-    "current_time": "2024-11-28 11:08:54",
-    "timezone": "America/Toronto"
 }
 
 
