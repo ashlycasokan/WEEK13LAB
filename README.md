@@ -1,7 +1,7 @@
 # Building a Go API for Current Toronto Time with MySQL Database Logging
 
 
-1.Set Up MySQL Database:
+## 1.Set Up MySQL Database:
 Initialize MySQL:
 .\mysqld --initialize --console
 .\mysqld
@@ -33,17 +33,15 @@ This command inserts a new row into the time_log table. The value for the timest
 
 This command retrieves all rows from the time_log table. The * symbol means "all columns," so this will fetch all records from the table, including the id and timestamp.
 
-+----+------------------------+
- id     | timestamp           
-+----+------------------------+
-  1     | 2024-11-28 12:34:56 
-+----+------------------------+
+| id  | timestamp           |
+|-----|---------------------|
+|  1  | 2024-11-28 12:34:56 |
 
 
  
 
 
-2.API Development:
+## 2.API Development:
 
 package main
 
@@ -144,7 +142,7 @@ func logTimeToDatabase(timestamp time.Time) error {
 }
 
 
-3.Time Zone Conversion:
+## 3.Time Zone Conversion:
 
 {
     "current_time": "2024-11-28 11:08:54",
@@ -152,17 +150,16 @@ func logTimeToDatabase(timestamp time.Time) error {
 }
 
 
-4.Database Connection:
+## 4.Database Connection:
  
 mysql> SELECT * FROM time_log;
-+----+---------------------+
-| id | timestamp           |
-+----+---------------------+
-|  1 | 2024-11-28 08:59:02 |
-|  2 | 2024-11-28 15:52:03 |
-|  3 | 2024-11-28 16:08:52 |
-|  4 | 2024-11-28 16:08:54 |
-+----+---------------------+
+| id  | timestamp           |
+|-----|---------------------|
+|  1  | 2024-11-28 08:59:02 |
+|  2  | 2024-11-28 15:52:03 |
+|  3  | 2024-11-28 16:08:52 |
+|  4  | 2024-11-28 16:08:54 |
+
 4 rows in set (0.00 sec)
 
  
