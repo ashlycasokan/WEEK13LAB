@@ -38,6 +38,8 @@ This command retrieves all rows from the time_log table. The * symbol means "all
 |  1  | 2024-11-28 12:34:56 |
 
 
+![image](https://github.com/user-attachments/assets/1c0b65ca-5fe6-4c42-88d1-56ae7f503774)
+
  
 
 
@@ -148,18 +150,18 @@ func logTimeToDatabase(timestamp time.Time) error {
     return nil
 }
 
+```
+
+## 3.Time Zone Conversion in JSON:
+
+![image](https://github.com/user-attachments/assets/bd820c6d-e2d6-4b84-b332-96301b22511a)
+
 
 ## 4.Database Connection:
- 
-mysql> SELECT * FROM time_log;
-| id  | timestamp           |
-|-----|---------------------|
-|  1  | 2024-11-28 08:59:02 |
-|  2  | 2024-11-28 15:52:03 |
-|  3  | 2024-11-28 16:08:52 |
-|  4  | 2024-11-28 16:08:54 |
+![image](https://github.com/user-attachments/assets/2c1c8c82-6bab-49da-936e-080d9e880b76)
 
-4 rows in set (0.00 sec)
+ 
+
 
  
  
