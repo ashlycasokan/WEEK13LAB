@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -23,6 +24,17 @@ var db *sql.DB
 type Response struct {
 	CurrentTime string `json:"current_time"`
 	Timezone    string `json:"timezone"`
+}
+
+func init() {
+	// Open a log file for writing
+	logFile, err := os.OpenFile("application.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	if err != nil {
+		log.Fatalf("Error opening log file: %v", err)
+	}
+
+	// Set log output to the log file
+	log.SetOutput(logFile)
 }
 
 func main() {
@@ -46,8 +58,9 @@ func main() {
 
 	log.Println("Connected to MySQL database successfully!")
 
-	// Register the /current-time endpoint
+	// Register the /current-time and /logs endpoints
 	http.HandleFunc("/current-time", currentTimeHandler)
+	http.HandleFunc("/logs", logsHandler)
 
 	// Start the HTTP server
 	log.Println("Starting server on :8080...")
@@ -56,6 +69,7 @@ func main() {
 	}
 }
 
+// Handler for /current-time endpoint
 func currentTimeHandler(w http.ResponseWriter, r *http.Request) {
 	// Load Toronto timezone
 	location, err := time.LoadLocation(torontoTimeZone)
@@ -86,6 +100,7 @@ func currentTimeHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// Log the current time into the database
 func logTimeToDatabase(timestamp time.Time) error {
 	// Query to insert the current time into the time_log table
 	query := "INSERT INTO time_log (timestamp) VALUES (?)"
@@ -94,4 +109,46 @@ func logTimeToDatabase(timestamp time.Time) error {
 		return fmt.Errorf("failed to insert time into database: %w", err)
 	}
 	return nil
+}
+
+// Handler for /logs endpoint
+func logsHandler(w http.ResponseWriter, r *http.Request) {
+	// Query to fetch all logs
+	rows, err := db.Query("SELECT id, timestamp FROM time_log")
+	if err != nil {
+		http.Error(w, "Failed to retrieve logs: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+	defer rows.Close()
+
+	// Create a slice to store the logs
+	var logs []struct {
+		ID        int    `json:"id"`
+		Timestamp string `json:"timestamp"`
+	}
+
+	// Iterate through the rows and add them to the logs slice
+	for rows.Next() {
+		var log struct {
+			ID        int    `json:"id"`
+			Timestamp string `json:"timestamp"`
+		}
+		if err := rows.Scan(&log.ID, &log.Timestamp); err != nil {
+			http.Error(w, "Failed to scan log: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+		logs = append(logs, log)
+	}
+
+	// Check for errors while iterating
+	if err := rows.Err(); err != nil {
+		http.Error(w, "Error processing rows: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Return the logs as a JSON response
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(logs); err != nil {
+		http.Error(w, "Failed to encode logs: "+err.Error(), http.StatusInternalServerError)
+	}
 }
